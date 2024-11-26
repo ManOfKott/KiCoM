@@ -1,0 +1,10 @@
+export const troopsEnum = {
+  ANGRIFFSTRUPP: "AT",
+  WASSERTRUPP: "WT",
+  SCHLAUCHTRUPP: "ST",
+  GRUPPENFÜHRER: "GF",
+  MASCHINIST: "MA",
+  ZUGFÜHRER: "ZF",
+  EINSATZLEITER: "EL",
+  MEDLER: "MD",
+};
