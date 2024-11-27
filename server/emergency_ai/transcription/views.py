@@ -20,7 +20,7 @@ class TranscriptionEndpoint(APIView):
         if not audio_file:
             return Response({"error": "No audio file provided"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Save the file to a specific directory under MEDIA_ROOT
+        # Save the audio file to a specific directory under MEDIA_ROOT
         save_path = os.path.join(settings.MEDIA_ROOT, "audio_files")
         os.makedirs(save_path, exist_ok=True)
         file_path = os.path.join(save_path, audio_file.name)
@@ -31,10 +31,13 @@ class TranscriptionEndpoint(APIView):
         try:
             # Transcribe the audio
             transcription_result = transcribe_audio_with_openai(file_path)
-            transcription_text = transcription_result.text
+            transcription_text = transcription_result.get("text", "").strip()
+
+            if not transcription_text:
+                return Response({"error": "Transcription failed. No text returned."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             # Get or create the session
-            session, created = EmergencySession.objects.get_or_create(session_id=session_id)
+            session, _ = EmergencySession.objects.get_or_create(session_id=session_id)
 
             # Save transcription to the database
             transcription = Transcription.objects.create(
@@ -42,29 +45,39 @@ class TranscriptionEndpoint(APIView):
                 transcription_text=transcription_text
             )
 
-            # Generate a detailed summary for this transcription
-            detailed_summary = ai_generate_detailed_summary(transcription_text, context="Emergency response situation in progress.")
-
-            # Save the summary, including the suggested question, to the database
-            Summary.objects.create(
-                transcription=transcription,
-                summary_text=detailed_summary["message"],
-                sender=detailed_summary["sender"],
-                receiver=detailed_summary["receiver"],
-                category=detailed_summary["category"],
-                prioritized=detailed_summary["prioritized"],
-                suggested_question=detailed_summary["suggested_question"]  # Save the suggested question
+            # Get detailed summaries as a JSON array
+            detailed_summaries_gen = ai_generate_detailed_summary(
+                transcription_text,
+                context="Emergency response situation in progress."
             )
+            detailed_summaries = list(detailed_summaries_gen)
+            print("I am here")
+            print(detailed_summaries)
+            print(type(detailed_summaries))
 
-            # Add timestamp from transcription to the response
-            detailed_summary["timestamp"] = transcription.created_at.isoformat()
+            # Iterate over the summaries and save them to the database
+            for summary in detailed_summaries:
+                Summary.objects.create(
+                    transcription=transcription,
+                    summary_text=summary["message"],
+                    sender=summary["sender"],
+                    receiver=summary["receiver"],
+                    category=summary["category"],
+                    prioritized=summary["prioritized"],
+                    suggested_question=summary["suggested_question"]
+                )
 
-            # Return the detailed summary as the API response
-            return Response(detailed_summary, status=status.HTTP_200_OK)
+            # Return the JSON array as the API response
+            return Response({
+                "session_id": session_id,
+                "transcription_text": transcription_text,
+                "summaries": detailed_summaries,
+            }, status=status.HTTP_200_OK)
 
         except Exception as e:
             logger.error(f"Error in TranscriptionEndpoint: {e}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 
@@ -108,8 +121,8 @@ class SummaryView(APIView):
             # Build response data
             summaries = []
             for transcription in transcriptions:
-                try:
-                    summary = transcription.summary
+                # Iterate through all summaries related to the transcription
+                for summary in transcription.summaries.all():
                     # Apply the 'new_only' filter
                     if new_only and not summary.is_new:
                         continue
@@ -126,8 +139,6 @@ class SummaryView(APIView):
                         "timestamp": transcription.created_at.isoformat(),
                         "is_new": summary.is_new
                     })
-                except Summary.DoesNotExist:
-                    logger.warning(f"No summary found for transcription {transcription.id}")
 
             logger.debug(f"Summaries to return: {summaries}")
             return Response({
