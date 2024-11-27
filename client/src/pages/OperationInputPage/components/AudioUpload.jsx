@@ -6,6 +6,7 @@ const AudioUpload = () => {
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]); // Speichere die ausgewählte Datei im Zustand
+    console.log("Datei ausgewählt:", event.target.files[0]);
   };
 
   const handleUpload = async () => {

@@ -1,11 +1,12 @@
 import axios from "axios";
 
 export const categorizeInputs = (inputList) => {
-  const categorizedInputs = { prioritized: [], all: [], marked: [] };
+  const categorizedInputs = { prioritized: [], all: [], marked: [], new: [] };
   inputList.forEach((input) => {
     if (input.prioritized) {
       categorizedInputs.prioritized.push(input);
     }
+
     if (input.marked) {
       categorizedInputs.marked.push(input);
     }
@@ -21,7 +22,28 @@ export const categorizeInputs = (inputList) => {
       return 0;
     });
 
+    categorizedInputs.prioritized.sort((a, b) => {
+      if (a.timestamp < b.timestamp) {
+        return 1;
+      }
+      if (a.timestamp > b.timestamp) {
+        return -1;
+      }
+      return 0;
+    });
+
+    categorizedInputs.marked.sort((a, b) => {
+      if (a.timestamp < b.timestamp) {
+        return 1;
+      }
+      if (a.timestamp > b.timestamp) {
+        return -1;
+      }
+      return 0;
+    });
+
     if (input.is_new) {
+      categorizedInputs.new.push(input.summary_message);
       setTimeout(async () => {
         try {
           await axios.post("http://127.0.0.1:8000/api/mark-as-read/", {

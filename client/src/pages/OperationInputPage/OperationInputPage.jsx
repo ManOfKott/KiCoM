@@ -9,19 +9,10 @@ import {
 import React from "react";
 import OperationSection from "./components/OperationSection";
 import AudioUpload from "./components/AudioUpload";
+import RunDemoComponent from "./components/RunDemoComponent";
 import { Box } from "@mui/system";
 
 const OperationInputPage = () => {
-  const [demoButtonText, setDemoButtonText] = React.useState("Run Demo");
-
-  const runDemo = () => {
-    console.log("Demo is running");
-    setDemoButtonText("Demo is running...");
-    setTimeout(() => {
-      setDemoButtonText("Run Demo");
-    }, 5000);
-  };
-
   return (
     <Box sx={{ height: "95vh", padding: "70px", boxSizing: "border-box" }}>
       <AppBar
@@ -33,7 +24,6 @@ const OperationInputPage = () => {
           borderBottomRightRadius: "10px",
           borderBottom: "2px solid black",
         }}
-        variant="outlined"
       >
         <Toolbar
           sx={{
@@ -54,19 +44,7 @@ const OperationInputPage = () => {
             Operation Input
           </Typography>
           <Box sx={{ width: "250px" }}>
-            <Button
-              variant="outlined"
-              sx={{
-                color: "#cd1c18",
-                borderColor: "#cd1c18",
-                height: "50px",
-                fontSize: "1rem",
-                width: "100%",
-              }}
-              onClick={runDemo}
-            >
-              {demoButtonText}
-            </Button>
+            <RunDemoComponent />
           </Box>
         </Toolbar>
       </AppBar>

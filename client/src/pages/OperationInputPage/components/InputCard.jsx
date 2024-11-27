@@ -10,9 +10,6 @@ const InputCard = ({ input, prioritized }) => {
   const bgcolor = "white";
   const borderSize = prioritized ? "5px" : "1px";
 
-  console.log("Input:", input);
-  console.log(input.is_new);
-
   const card = (
     <Card
       key={input.id}
