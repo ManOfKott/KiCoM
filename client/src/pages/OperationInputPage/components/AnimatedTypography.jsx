@@ -5,7 +5,6 @@ import { TypeAnimation } from "react-type-animation";
 const AnimatedTypography = ({ animate, children }) => {
   const theme = useTheme();
   const typographyTheme = theme.typography.body1;
-  console.log(typographyTheme);
 
   if (animate) {
     return (
