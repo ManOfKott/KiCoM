@@ -137,3 +137,12 @@ MEDIA_URL = '/media/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # React-Frontend während der Entwicklung
 ]
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
