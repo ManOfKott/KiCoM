@@ -1,6 +1,7 @@
 import { Typography, Stack, Container, AppBar, Toolbar } from "@mui/material";
 import React from "react";
 import OperationSection from "./components/OperationSection";
+import AudioUpload from "./components/AudioUpload";
 
 const OperationInputPage = () => {
   return (
@@ -36,6 +37,7 @@ const OperationInputPage = () => {
       </AppBar>
       <Stack spacing={2} sx={{ paddingTop: "70px" }}>
         <OperationSection />
+        <AudioUpload />
       </Stack>
     </>
   );
