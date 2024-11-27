@@ -98,9 +98,9 @@ const OperationSection = () => {
             <MarkedSection inputs={categorizedInputs.marked} />
           </Grid>
         </Grid>
-        {/* <Grid item size={12} sx={{ height: "100%" }}>
-        <AudioUpload />
-      </Grid> */}
+        <Grid item size={12} sx={{ height: "100%" }}>
+          <AudioUpload />
+        </Grid>
       </Grid>
     </>
   );
