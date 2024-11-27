@@ -37,7 +37,7 @@ def ai_generate_detailed_summary(transcription_text, context=""):
             "receiver": "Unknown",
             "message": "No content provided.",
             "category": "General",
-            "priority": "Low",
+            "prioritized": "False",
             "suggested_question": "Could you provide more details about this?",
         }
 
@@ -49,7 +49,7 @@ Your task is to:
 2. Identify the receiver of the message. This is usually a code at the end of the message, e.g., "Control".
 3. Summarize all relevant details from the transcription into one cohesive message. Keep the summary concise.
 4. Assign a category to the message based on its content (e.g., "Fire", "Medical Emergency", "Traffic Incident").
-5. Assign a priority level to the message ("Low", "Medium", "High") based on its urgency.
+5. Assign a priority level to the message True or False based on its urgency, True means is prioritized.
 6. Suggest one relevant question to ask next based on the content of the transcription.
 
 Here is the transcription text:
@@ -64,7 +64,7 @@ Please return the result in this JSON format:
     "receiver": "Control",
     "message": "There is a fire at the west end.",
     "category": "Fire",
-    "priority": "High",
+    "prioritized": "True",
     "suggested_question": "What is the extent of the fire damage?"
 }}
     """
@@ -98,7 +98,7 @@ Please return the result in this JSON format:
             "receiver": "Unknown",
             "message": "Error generating summary.",
             "category": "General",
-            "priority": "Low",
+            "prioritized": "True",
             "suggested_question": "What additional information can you provide?",
         }
 

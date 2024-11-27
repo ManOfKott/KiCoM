@@ -53,6 +53,17 @@ def mark_summaries_as_read(summary_ids):
     else:
         print(f"Failed to mark summaries as read: {response.status_code}, {response.text}")
 
+def mark_summary_as_marked(summary_id):
+    """Mark a specific summary as marked."""
+    response = requests.post(
+        f"{BASE_URL}/mark-summary-as-marked/",
+        json={"id": summary_id}
+    )
+    if response.status_code == 200:
+        print(f"Marked summary {summary_id} as marked: {response.json()}")
+    else:
+        print(f"Failed to mark summary as marked: {response.status_code}, {response.text}")
+
 def main():
     # Step 1: Upload audio files
     print("Uploading audio files...")
@@ -76,12 +87,17 @@ def main():
         print("\nMarking some summaries as read...")
         mark_summaries_as_read(new_summary_ids[:1])  # Mark the first new summary as read
 
-    # Step 5: Fetch summaries again and check `is_new` flags
-    print("\nFetching summaries after marking as read...")
+    # Step 5: Mark a summary as marked
+    if new_summary_ids:
+        print("\nMarking a summary as marked...")
+        mark_summary_as_marked(new_summary_ids[0])  # Mark the first summary as marked
+
+    # Step 6: Fetch summaries again and check `is_new` flags
+    print("\nFetching summaries after marking as read and marked...")
     updated_summaries = fetch_summaries()
     print(f"Updated summaries: {updated_summaries}")
 
-    # Step 6: Simulate periodic polling with `since` parameter
+    # Step 7: Simulate periodic polling with `since` parameter
     if updated_summaries:
         latest_timestamp = updated_summaries[-1]["timestamp"]
     else:

@@ -46,7 +46,7 @@ class TranscriptionAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Check response keys
-        expected_keys = {"sender", "receiver", "message", "category", "priority", "timestamp", "suggested_question"}
+        expected_keys = {"sender", "receiver", "message", "category", "prioritized", "timestamp", "suggested_question"}
         self.assertTrue(expected_keys.issubset(response.data.keys()))
 
         # Verify database entries
@@ -58,7 +58,7 @@ class TranscriptionAPITest(TestCase):
         self.assertEqual(summary.sender, response.data["sender"])
         self.assertEqual(summary.receiver, response.data["receiver"])
         self.assertEqual(summary.category, response.data["category"])
-        self.assertEqual(summary.priority, response.data["priority"])
+        self.assertEqual(summary.prioritized, response.data["prioritized"])
         self.assertEqual(summary.summary_text, response.data["message"])
         self.assertEqual(summary.suggested_question, response.data["suggested_question"])
         self.assertEqual(transcription.created_at.isoformat(), response.data["timestamp"])

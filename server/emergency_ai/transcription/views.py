@@ -52,7 +52,7 @@ class TranscriptionEndpoint(APIView):
                 sender=detailed_summary["sender"],
                 receiver=detailed_summary["receiver"],
                 category=detailed_summary["category"],
-                priority=detailed_summary["priority"],
+                prioritized=detailed_summary["prioritized"],
                 suggested_question=detailed_summary["suggested_question"]  # Save the suggested question
             )
 
@@ -121,7 +121,7 @@ class SummaryView(APIView):
                         "sender": summary.sender,
                         "receiver": summary.receiver,
                         "category": summary.category,
-                        "priority": summary.priority,
+                        "prioritized": summary.prioritized,
                         "suggested_question": summary.suggested_question,  # Include the field
                         "timestamp": transcription.created_at.isoformat(),
                         "is_new": summary.is_new
@@ -153,3 +153,19 @@ class MarkSummariesAsRead(APIView):
         return Response({
             "message": f"Marked {updated_count} summaries as read."
         }, status=status.HTTP_200_OK)
+    
+class MarkSummaryAsMarked(APIView):
+    def post(self, request):
+        id = request.data.get("id", None)  # Fetch the single ID
+        if not id:
+            return Response({"error": "No ID provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            summary = Summary.objects.get(id=id)
+            summary.is_marked = True
+            summary.save()
+            return Response({
+                "message": f"Marked summary {id} as marked."
+            }, status=status.HTTP_200_OK)
+        except Summary.DoesNotExist:
+            return Response({"error": "Summary not found"}, status=status.HTTP_404_NOT_FOUND)
