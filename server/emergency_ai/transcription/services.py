@@ -98,7 +98,7 @@ Please return the result in this JSON format:
             "receiver": "Unknown",
             "message": "Error generating summary.",
             "category": "General",
-            "priority": "Low",
+            "prioritized": "True",
             "suggested_question": "What additional information can you provide?",
         }
 
