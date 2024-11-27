@@ -71,12 +71,12 @@ class TranscriptionEndpoint(APIView):
 class SummaryView(APIView):
     def get(self, request, session_id):
         """
-        Retrieve summaries for a specific session, optionally filtering by a timestamp.
+        Retrieve summaries for a specific session, optionally filtering by a timestamp or new_only.
         """
         try:
             # Get the session
             session = EmergencySession.objects.get(session_id=session_id)
-            
+
             # Parse the 'since' parameter from the querystring
             since = request.query_params.get("since")
             since_timestamp = None
@@ -95,6 +95,9 @@ class SummaryView(APIView):
 
             logger.debug(f"Parsed 'since' timestamp: {since_timestamp}")
 
+            # Parse the 'new_only' parameter from the querystring
+            new_only = request.query_params.get("new_only", "false").lower() == "true"
+
             # Filter transcriptions based on the timestamp
             transcriptions = Transcription.objects.filter(session=session)
             if since_timestamp:
@@ -107,6 +110,10 @@ class SummaryView(APIView):
             for transcription in transcriptions:
                 try:
                     summary = transcription.summary
+                    # Apply the 'new_only' filter
+                    if new_only and not summary.is_new:
+                        continue
+
                     summaries.append({
                         "id": str(summary.id),  # Convert UUID to string
                         "transcription_text": transcription.transcription_text,

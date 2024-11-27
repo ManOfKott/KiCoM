@@ -24,22 +24,23 @@ def upload_audio_files():
             else:
                 print(f"Failed to upload {audio_file}: {response.status_code}, {response.text}")
 
-def fetch_summaries_since(since=None):
-    """Fetch summaries for the session after a given timestamp."""
+def fetch_summaries(since=None, new_only=False):
+    """Fetch summaries for the session with optional filters."""
     url = f"{BASE_URL}/summary/{SESSION_ID}/"
+    params = {}
     if since:
-        url += f"?since={since}"
-    
-    response = requests.get(url)
+        params["since"] = since
+    if new_only:
+        params["new_only"] = "true"
+
+    response = requests.get(url, params=params)
     if response.status_code == 200:
         summaries = response.json().get("summaries", [])
-        new_summaries = [summary for summary in summaries if summary.get("is_new", False)]
-        print(f"New summaries: {new_summaries}")
-        return new_summaries
+        print(f"Fetched summaries: {summaries}")
+        return summaries
     else:
         print(f"Failed to fetch summaries: {response.status_code}, {response.text}")
         return []
-
 
 def mark_summaries_as_read(summary_ids):
     """Mark specific summaries as read (set `is_new` to `False`)."""
@@ -59,23 +60,28 @@ def main():
 
     # Step 2: Fetch all summaries and check `is_new` flags
     print("\nFetching all summaries initially...")
-    summaries = fetch_summaries_since()
+    summaries = fetch_summaries()
     
-    # Collect IDs of summaries that are marked as new
+    # Collect IDs of summaries that are marked as not new
     new_summary_ids = [summary["id"] for summary in summaries if summary.get("is_new", False)]
     print(f"New summaries: {new_summary_ids}")
 
-    # Step 3: Mark some summaries as read
+    # Step 3: Fetch only new summaries
+    print("\nFetching only new summaries...")
+    new_summaries = fetch_summaries(new_only=True)
+    print(f"New summaries fetched: {new_summaries}")
+
+    # Step 4: Mark some summaries as read
     if new_summary_ids:
         print("\nMarking some summaries as read...")
         mark_summaries_as_read(new_summary_ids[:1])  # Mark the first new summary as read
 
-    # Step 4: Fetch summaries again and check `is_new` flags
+    # Step 5: Fetch summaries again and check `is_new` flags
     print("\nFetching summaries after marking as read...")
-    updated_summaries = fetch_summaries_since()
+    updated_summaries = fetch_summaries()
     print(f"Updated summaries: {updated_summaries}")
 
-    # Step 5: Simulate periodic polling with `since` parameter
+    # Step 6: Simulate periodic polling with `since` parameter
     if updated_summaries:
         latest_timestamp = updated_summaries[-1]["timestamp"]
     else:
@@ -85,7 +91,7 @@ def main():
     for _ in range(5):  # Poll 5 times
         time.sleep(5)  # Simulate a 5-second delay between requests
         print(f"\nFetching summaries since {latest_timestamp}...")
-        summaries = fetch_summaries_since(since=latest_timestamp)
+        summaries = fetch_summaries(since=latest_timestamp)
 
         # Update `latest_timestamp` if new summaries are received
         if summaries:
