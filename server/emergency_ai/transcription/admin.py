@@ -4,8 +4,8 @@ from .models import EmergencySession, Transcription, Summary
 
 @admin.register(Summary)
 class SummaryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'transcription', 'summary_text', 'sender', 'receiver', 'category', 'priority', 'is_new', 'created_at')
-    list_filter = ('is_new', 'category', 'priority')
+    list_display = ('id', 'transcription', 'summary_text', 'sender', 'receiver', 'category', 'prioritized', 'is_new', 'created_at')
+    list_filter = ('is_new', 'category', 'prioritized')
     search_fields = ('summary_text', 'sender', 'receiver')
 
 @admin.register(EmergencySession)
