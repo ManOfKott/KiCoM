@@ -108,6 +108,7 @@ class SummaryView(APIView):
                 try:
                     summary = transcription.summary
                     summaries.append({
+                        "id": str(summary.id),  # Convert UUID to string
                         "transcription_text": transcription.transcription_text,
                         "summary_message": summary.summary_text,
                         "sender": summary.sender,
@@ -116,6 +117,7 @@ class SummaryView(APIView):
                         "priority": summary.priority,
                         "suggested_question": summary.suggested_question,  # Include the field
                         "timestamp": transcription.created_at.isoformat(),
+                        "is_new": summary.is_new
                     })
                 except Summary.DoesNotExist:
                     logger.warning(f"No summary found for transcription {transcription.id}")
@@ -132,5 +134,15 @@ class SummaryView(APIView):
 
 
 
+class MarkSummariesAsRead(APIView):
+    def post(self, request):
+        ids = request.data.get("ids", [])
+        if not ids:
+            return Response({"error": "No IDs provided"}, status=status.HTTP_400_BAD_REQUEST)
 
+        summaries = Summary.objects.filter(id__in=ids)
+        updated_count = summaries.update(is_new=False)
 
+        return Response({
+            "message": f"Marked {updated_count} summaries as read."
+        }, status=status.HTTP_200_OK)
