@@ -7,6 +7,8 @@ export const troopsEnum = {
   ZUGFÜHRER: "ZF",
   EINSATZLEITER: "EL",
   MELDER: "MD",
+  LEITSTELLE: "LS",
+  EINSATZLEITWAGEN: "ELW",
   UNKNOWN: "?",
 };
 

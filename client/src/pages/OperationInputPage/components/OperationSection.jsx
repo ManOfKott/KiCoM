@@ -4,11 +4,14 @@ import Grid from "@mui/material/Grid2";
 import PrioSection from "./PrioSection";
 import InputLogSection from "./InputLogSection";
 import MarkedSection from "./MarkedSection";
-import inputList from "../../../assets/mockInputList";
+// import inputList from "../../../assets/mockInputList";
 import { categorizeInputs } from "../../../utils/InputCategorization";
+import axios from "axios";
+import AudioUpload from "./AudioUpload";
 
 const OperationSection = () => {
-  // const [operator, setOperator] = useState("");
+  const [inputList, setInputList] = React.useState([]);
+
   const [categorizedInputs, setCategorizedInputs] = React.useState({
     prioritized: [],
     all: [],
@@ -16,8 +19,32 @@ const OperationSection = () => {
   });
 
   React.useEffect(() => {
-    setCategorizedInputs(categorizeInputs(inputList));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/summary/test-session-1/",
+          {
+            params: {},
+          }
+        );
+        console.log("Response:", response.data);
+        setInputList(response.data?.summaries || []);
+      } catch (error) {
+        console.error("Error:", error.response || error.message);
+      }
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, 500);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
+
+  React.useEffect(() => {
+    setCategorizedInputs(categorizeInputs(inputList));
+  }, [inputList]);
 
   return (
     <Grid container spacing={2} sx={{ height: "100%" }}>
@@ -37,6 +64,9 @@ const OperationSection = () => {
         >
           <MarkedSection inputs={categorizedInputs.marked} />
         </Grid>
+      </Grid>
+      <Grid item size={12} sx={{ height: "100%" }}>
+        <AudioUpload />
       </Grid>
     </Grid>
   );

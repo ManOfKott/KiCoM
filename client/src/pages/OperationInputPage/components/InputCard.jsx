@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Stack, Typography, Avatar, Slide } from "@mui/material";
+import { Card, Stack, Typography, Avatar, Slide, Box } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { troopColors } from "../../../assets/troops";
 import dayjs from "dayjs";
@@ -9,6 +9,9 @@ const InputCard = ({ input, prioritized }) => {
   const borderColor = prioritized ? "#cd1c18" : "black";
   const bgcolor = "white";
   const borderSize = prioritized ? "5px" : "1px";
+
+  console.log("Input:", input);
+  console.log(input.is_new);
 
   const card = (
     <Card
@@ -58,19 +61,28 @@ const InputCard = ({ input, prioritized }) => {
           </Avatar>
         </Stack>
 
-        <Stack spacing={1} direction="row" alignItems="center">
-          <AnimatedTypography animate={input.isNew}>
-            {input.message}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexDirection: "row",
+            width: "100%",
+          }}
+        >
+          <AnimatedTypography animate={input.is_new}>
+            {input.summary_message}
           </AnimatedTypography>
-          <Typography variant="subtitle1">
+
+          <Typography variant="subtitle1" color="grey">
             {dayjs(input.timestamp).format("HH:mm:ss")}
           </Typography>
-        </Stack>
+        </Box>
       </Stack>
     </Card>
   );
 
-  if (input.isNew) {
+  if (input.is_new) {
     return (
       <Slide
         direction="right"
