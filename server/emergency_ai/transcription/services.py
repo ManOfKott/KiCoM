@@ -4,6 +4,7 @@ import logging
 from openai import OpenAI
 from django.conf import settings
 from .models import Summary
+import ast
 
 logger = logging.getLogger(__name__)
 
@@ -23,82 +24,140 @@ def transcribe_audio_with_openai(file_path):
             model="whisper-1",
             file=audio_file
         )
-        return response  # Returns the transcription object with the `text` field
+        # Ensure the response is returned as a dictionary with a 'text' field
+        return {"text": response.text}
 
 
 def ai_generate_detailed_summary(transcription_text, context=""):
     """
-    Generates a detailed summary with sender, receiver, message, category, priority, and suggested question.
+    Generates a detailed summary of emergency communication transcripts. Each message is parsed into 
+    individual JSON objects with fields: sender, receiver, message, category, priority, and suggested question.
+    Returns a list of messages.
     """
+    summaries = []  # Initialize an empty list to store the summaries
+
     if not transcription_text.strip():
         logger.warning("Empty transcription text provided. Skipping AI summarization.")
-        return {
+        summaries.append({
             "sender": "Unknown",
             "receiver": "Unknown",
             "message": "No content provided.",
             "category": "General",
             "prioritized": "False",
             "suggested_question": "Could you provide more details about this?",
-        }
+        })
+        return summaries  # Return the list immediately
 
     prompt = f"""
-You are an assistant helping with emergency response transcription. The text provided includes transcribed emergency communications.
+You are an assistant helping with emergency response transcription. Your task is to analyze the transcription and extract detailed summaries of individual communications. Each communication consists of a sender, a receiver, and a specific message. Based on the transcription:
 
-Your task is to:
-1. Identify the sender of the message. This is usually a code at the start of the message, e.g., "Frankfurt 4".
-2. Identify the receiver of the message. This is usually a code at the end of the message, e.g., "Control".
-3. Summarize all relevant details from the transcription into one cohesive message. Keep the summary concise.
-4. Assign a category to the message based on its content (e.g., "Fire", "Medical Emergency", "Traffic Incident").
-5. Assign a priority level to the message True or False based on its urgency, True means is prioritized.
-6. Suggest one relevant question to ask next based on the content of the transcription.
+### Instructions:
+1. **Identify Sender and Receiver**:
+    - Determine the sender and receiver for each message. Use codes like:
+      - ANGRIFFSTRUPP ("AT"), WASSERTRUPP ("WT"), SCHLAUCHTRUPP ("ST"), GRUPPENFÜHRER ("GF"),
+        MASCHINIST ("MA"), ZUGFÜHRER ("ZF"), EINSATZLEITER ("EL"), MELDER ("MD").
+    - If sender or receiver is unclear, use "UNKNOWN".
 
-Here is the transcription text:
+2. **Segment Messages**:
+    - Divide the transcription into distinct interactions. Start and end points are typically marked by "Kommen" or "Ende".
+    - Each interaction should be processed as an individual message.
+
+3. **Summarize Content**:
+    - Create a concise message for each interaction.
+    - Retain the original German text for the "message" field.
+
+4. **Categorize**:
+    - Assign a category to each message based on its content. Example categories:
+      - "Kommunikation herstellen" (Establish Communication),
+      - "Anfrage Ausrüstung" (Request Equipment),
+      - "Feuer" (Fire),
+      - "Notfall medizinisch" (Medical Emergency).
+
+5. **Set Priority**:
+    - Mark priority as "True" for urgent messages (e.g., requests for equipment, life-threatening scenarios).
+    - Otherwise, use "False".
+
+6. **Suggest Questions**:
+    - Suggest a relevant follow-up question based on the context of the message.
+
+### Example Transcription:
+Transcription: 
+Schlauchtrupp HLF und Gruppenführer kommen. 
+Hier Schlauchtrupp HLF kommen. 
+Ja, bitte bringen Sie den Haupteingang Drucklüfter in Stellung zur Entrauchung des Gebäudes. 
+Kommen. Verstanden. Lüfter vor den Haupteingang zum Entrauchen des Gebäudes. Ja, so richtig. Ende.
+
+### Example Output:
+[
+    {{
+        "sender": "ST",
+        "receiver": "GF",
+        "message": "Schlauchtrupp HLF und Gruppenführer kommen",
+        "category": "Kommunikation herstellen",
+        "prioritized": "False",
+        "suggested_question": ""
+    }},
+    {{
+        "sender": "GF",
+        "receiver": "ST",
+        "message": "Hier Schlauchtrupp HLF kommen",
+        "category": "Kommunikation herstellen",
+        "prioritized": "False",
+        "suggested_question": ""
+    }},
+    {{
+        "sender": "ST",
+        "receiver": "GF",
+        "message": "Bringen Sie den Drucklüfter zum Haupteingang zur Entrauchung des Gebäudes",
+        "category": "Anfrage Ausrüstung",
+        "prioritized": "True",
+        "suggested_question": "Brauchen Sie zusätzliche Ausrüstung?"
+    }}
+]
+
+### Transcription for Analysis:
 {transcription_text}
 
-Additional context (if available):
+### Additional Context (if available):
 {context}
 
-Please return the result in this JSON format:
-{{
-    "sender": "Frankfurt 4",
-    "receiver": "Control",
-    "message": "There is a fire at the west end.",
-    "category": "Fire",
-    "prioritized": "True",
-    "suggested_question": "What is the extent of the fire damage?"
-}}
-    """
+### Required JSON Format:
+Return an array of messages, each with:
+- "sender": The code for the sender (e.g., "ST").
+- "receiver": The code for the receiver (e.g., "GF").
+- "message": The specific interaction message in German.
+- "category": The category assigned to the message (in German).
+- "prioritized": "True" or "False" based on urgency.
+- "suggested_question": A relevant follow-up question (in German).
+"""
 
     try:
-        # Call the OpenAI API
+        # Call OpenAI API and process
         completion = client.chat.completions.create(
             model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
+            messages=[{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt}],
         )
-
         response_content = completion.choices[0].message.content.strip()
+        print(f"Raw API response content: {response_content}")
 
-        # Use regex to extract the JSON part
-        json_match = re.search(r"\{.*\}", response_content, re.DOTALL)  # Match JSON within the response
-        if json_match:
-            json_content = json_match.group()
-            response_data = json.loads(json_content)  # Parse JSON output
-            return response_data
-        else:
-            raise ValueError("No JSON content found in the LLM response.")
+        # Slice the string from the first '[' to the last ']'
+        start_idx = response_content.find("[")
+        end_idx = response_content.rfind("]") + 1  # Include the closing bracket
 
-    except (json.JSONDecodeError, ValueError) as e:
-        logger.error(f"Error generating detailed summary with AI: {e}")
-        logger.error(f"Response content: {response_content}")
-        return {
+        json_content = response_content[start_idx:end_idx]
+        print(f"Sliced JSON content: {json_content}")
+
+        summaries = ast.literal_eval(json_content)  # Convert JSON to a Python list
+
+    except Exception as e:
+        logger.error(f"Error generating summary: {e}")
+        summaries.append({
             "sender": "Unknown",
             "receiver": "Unknown",
             "message": "Error generating summary.",
             "category": "General",
             "prioritized": "True",
-            "suggested_question": "What additional information can you provide?",
-        }
+            "suggested_question": "Could you provide more details about this?",
+        })
 
+    return summaries  # Return the collected summaries
