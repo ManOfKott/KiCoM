@@ -2,10 +2,11 @@ import { Typography, Stack, Container, AppBar, Toolbar } from "@mui/material";
 import React from "react";
 import OperationSection from "./components/OperationSection";
 import AudioUpload from "./components/AudioUpload";
+import { Box } from "@mui/system";
 
 const OperationInputPage = () => {
   return (
-    <>
+    <Box sx={{ height: "95vh", padding: "70px", boxSizing: "border-box" }}>
       <AppBar
         position="fixed"
         sx={{
@@ -21,25 +22,23 @@ const OperationInputPage = () => {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "center",
             borderBottomLeftRadius: "10px",
             borderBottomRightRadius: "10px",
           }}
         >
-          <Container />
-          <Container>
-            <Typography variant="h3" textAlign="center" sx={{ color: "black" }}>
-              Operation Input
-            </Typography>
-          </Container>
-          <Container />
+          <Typography
+            display="block"
+            variant="h3"
+            textAlign="center"
+            sx={{ color: "black" }}
+          >
+            Operation Input
+          </Typography>
         </Toolbar>
       </AppBar>
-      <Stack spacing={2} sx={{ paddingTop: "70px" }}>
-        <OperationSection />
-        <AudioUpload />
-      </Stack>
-    </>
+      <OperationSection />
+    </Box>
   );
 };
 

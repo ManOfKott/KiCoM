@@ -9,6 +9,7 @@ const AudioUpload = () => {
   };
 
   const handleUpload = async () => {
+    console.log("Hochladen:", file);
     if (!file) {
       alert("Bitte eine Datei auswählen!");
       return;
@@ -20,7 +21,7 @@ const AudioUpload = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/summary/test-session-1/",
+        "http://127.0.0.1:8000/api/transcribe/",
         formData,
         {
           headers: {

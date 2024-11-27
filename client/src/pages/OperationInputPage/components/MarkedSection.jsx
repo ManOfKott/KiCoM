@@ -3,22 +3,20 @@ import React from "react";
 import ReportIcon from "@mui/icons-material/Report";
 import InputCard from "./InputCard";
 
-const PrioSection = ({ inputs }) => {
-  const borderColor = "#cd1c18";
-  const bgcolor = "#ffa896";
-  const containerRef = React.useRef(null);
+const MarkedSection = ({ inputs }) => {
+  const borderColor = "#fcba03";
+  const bgcolor = "#f7dc92";
 
   return (
     <Card
       variant="outlined"
       sx={{
-        border: "4px solid grey",
+        border: "4px solid",
         borderRadius: "0.5rem",
         borderColor,
         bgcolor,
         height: "100%",
       }}
-      ref={containerRef}
     >
       <CardContent
         sx={{
@@ -32,18 +30,6 @@ const PrioSection = ({ inputs }) => {
           },
         }}
       >
-        <Container
-          disableGutters
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "content",
-            padding: "5px",
-          }}
-        >
-          <ReportIcon sx={{ fontSize: "4rem", color: "#cd1c18" }} />
-        </Container>
-
         {inputs.map((input, index) => (
           <InputCard
             key={index}
@@ -56,4 +42,4 @@ const PrioSection = ({ inputs }) => {
   );
 };
 
-export default PrioSection;
+export default MarkedSection;
