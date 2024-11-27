@@ -22,12 +22,11 @@ class Transcription(models.Model):
         return f"Transcription for {self.session.session_id} at {self.created_at}"
 
 
-
 class Summary(models.Model):
-    transcription = models.OneToOneField(
-        Transcription,
+    transcription = models.ForeignKey(
+        Transcription,  # Change to ForeignKey to allow multiple summaries
         on_delete=models.CASCADE,
-        related_name="summary"
+        related_name="summaries"  # Optional: Enables reverse querying
     )
     unique_id = models.UUIDField(default=uuid4, editable=False, unique=True)
     summary_text = models.TextField()
@@ -37,8 +36,8 @@ class Summary(models.Model):
     prioritized = models.BooleanField(default=False)
     suggested_question = models.TextField(default="No suggested question provided.")
     created_at = models.DateTimeField(auto_now_add=True)
-    is_new = models.BooleanField(default=True)  # Ensure this field is included
-    is_marked = models.BooleanField(default=False) 
+    is_new = models.BooleanField(default=True)
+    is_marked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Summary for transcription {self.transcription.id}"
