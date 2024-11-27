@@ -1,10 +1,11 @@
 export const categorizeInputs = (inputList) => {
-  const categorizedInputs = {};
+  const categorizedInputs = { prioritized: [], nonPrioritized: [] };
   inputList.forEach((input) => {
-    if (!categorizedInputs[input.category]) {
-      categorizedInputs[input.category] = [];
+    if (input.prioritized) {
+      categorizedInputs.prioritized.push(input);
+    } else {
+      categorizedInputs.nonPrioritized.push(input);
     }
-    categorizedInputs[input.category].push(input);
   });
   return categorizedInputs;
 };

@@ -1,30 +1,43 @@
-import { Typography, Stack, Container, Button } from "@mui/material";
+import { Typography, Stack, Container, AppBar, Toolbar } from "@mui/material";
 import React from "react";
 import OperationSection from "./components/OperationSection";
 
 const OperationInputPage = () => {
   return (
-    <Stack spacing={2}>
-      <Container
+    <>
+      <AppBar
+        position="fixed"
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          backgroundColor: "lightgrey",
-          width: "100%",
+          bgcolor: "#ffa896",
+          height: "70px",
+          borderBottomLeftRadius: "10px",
+          borderBottomRightRadius: "10px",
+          borderBottom: "2px solid black",
         }}
+        variant="outlined"
       >
-        <Typography variant="h4" textAlign="center">
-          Logo
-        </Typography>
-        <Typography variant="h2" textAlign="center">
-          Einsatz Input
-        </Typography>
-        <Button>Export als PDF</Button>
-      </Container>
-
-      <OperationSection />
-    </Stack>
+        <Toolbar
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottomLeftRadius: "10px",
+            borderBottomRightRadius: "10px",
+          }}
+        >
+          <Container />
+          <Container>
+            <Typography variant="h3" textAlign="center" sx={{ color: "black" }}>
+              Operation Input
+            </Typography>
+          </Container>
+          <Container />
+        </Toolbar>
+      </AppBar>
+      <Stack spacing={2} sx={{ paddingTop: "70px" }}>
+        <OperationSection />
+      </Stack>
+    </>
   );
 };
 
