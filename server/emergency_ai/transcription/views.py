@@ -121,8 +121,8 @@ class SummaryView(APIView):
             # Build response data
             summaries = []
             for transcription in transcriptions:
-                try:
-                    summary = transcription.summary
+                # Iterate through all summaries related to the transcription
+                for summary in transcription.summaries.all():
                     # Apply the 'new_only' filter
                     if new_only and not summary.is_new:
                         continue
@@ -139,8 +139,6 @@ class SummaryView(APIView):
                         "timestamp": transcription.created_at.isoformat(),
                         "is_new": summary.is_new
                     })
-                except Summary.DoesNotExist:
-                    logger.warning(f"No summary found for transcription {transcription.id}")
 
             logger.debug(f"Summaries to return: {summaries}")
             return Response({
