@@ -16,12 +16,12 @@ class TranscriptionEndpoint(APIView):
         if not session_id:
             return Response({"error": "Session ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        audio_file = request.FILES.get('audio')
+        audio_file = request.FILES.get("audio")
         if not audio_file:
             return Response({"error": "No audio file provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Save the file to a specific directory under MEDIA_ROOT
-        save_path = os.path.join(settings.MEDIA_ROOT, 'audio_files')
+        save_path = os.path.join(settings.MEDIA_ROOT, "audio_files")
         os.makedirs(save_path, exist_ok=True)
         file_path = os.path.join(save_path, audio_file.name)
 
@@ -45,24 +45,22 @@ class TranscriptionEndpoint(APIView):
             # Generate a detailed summary for this transcription
             detailed_summary = ai_generate_detailed_summary(transcription_text, context="Emergency response situation in progress.")
 
-            # Save the summary to the database
+            # Save the summary, including the suggested question, to the database
             Summary.objects.create(
                 transcription=transcription,
-                summary_text=detailed_summary.get("message", "No content provided."),
-                sender=detailed_summary.get("sender", "Unknown"),
-                receiver=detailed_summary.get("receiver", "Unknown"),
-                category=detailed_summary.get("category", "General"),
-                priority=detailed_summary.get("priority", "Low"),
+                summary_text=detailed_summary["message"],
+                sender=detailed_summary["sender"],
+                receiver=detailed_summary["receiver"],
+                category=detailed_summary["category"],
+                priority=detailed_summary["priority"],
+                suggested_question=detailed_summary["suggested_question"]  # Save the suggested question
             )
 
-            # Include the transcription's timestamp in the response
-            response_data = {
-                **detailed_summary,
-                "timestamp": transcription.created_at.isoformat()
-            }
+            # Add timestamp from transcription to the response
+            detailed_summary["timestamp"] = transcription.created_at.isoformat()
 
             # Return the detailed summary as the API response
-            return Response(response_data, status=status.HTTP_200_OK)
+            return Response(detailed_summary, status=status.HTTP_200_OK)
 
         except Exception as e:
             logger.error(f"Error in TranscriptionEndpoint: {e}")
@@ -116,6 +114,7 @@ class SummaryView(APIView):
                         "receiver": summary.receiver,
                         "category": summary.category,
                         "priority": summary.priority,
+                        "suggested_question": summary.suggested_question,  # Include the field
                         "timestamp": transcription.created_at.isoformat(),
                     })
                 except Summary.DoesNotExist:
@@ -130,6 +129,7 @@ class SummaryView(APIView):
         except EmergencySession.DoesNotExist:
             logger.error(f"Session not found: {session_id}")
             return Response({"error": "Session not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 

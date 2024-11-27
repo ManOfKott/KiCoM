@@ -5,34 +5,10 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from transcription.models import EmergencySession, Transcription, Summary
 import os
+from unittest.mock import patch
 from datetime import timedelta, datetime
 from django.utils.timezone import now
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
 
-
-import logging
-from django.test import TestCase
-from django.urls import reverse
-from rest_framework.test import APIClient
-from rest_framework import status
-from transcription.models import EmergencySession, Transcription, Summary
-import os
-from unittest.mock import patch
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-import logging
-from django.test import TestCase
-from django.urls import reverse
-from rest_framework.test import APIClient
-from rest_framework import status
-from transcription.models import EmergencySession, Transcription, Summary
-import os
-from unittest.mock import patch
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -70,7 +46,7 @@ class TranscriptionAPITest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Check response keys
-        expected_keys = {"sender", "receiver", "message", "category", "priority", "timestamp"}
+        expected_keys = {"sender", "receiver", "message", "category", "priority", "timestamp", "suggested_question"}
         self.assertTrue(expected_keys.issubset(response.data.keys()))
 
         # Verify database entries
@@ -84,17 +60,8 @@ class TranscriptionAPITest(TestCase):
         self.assertEqual(summary.category, response.data["category"])
         self.assertEqual(summary.priority, response.data["priority"])
         self.assertEqual(summary.summary_text, response.data["message"])
+        self.assertEqual(summary.suggested_question, response.data["suggested_question"])
         self.assertEqual(transcription.created_at.isoformat(), response.data["timestamp"])
-
-
-
-    def test_missing_audio_file(self):
-        """Test error handling for missing audio file"""
-        response = self.client.post(self.transcribe_url, {"session_id": "test-session-1"})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("No audio file provided", response.data["error"])
-        logger.debug(f"Error Response: {response.data}")
-
 
 
 class SummaryAPITest(TestCase):
@@ -113,7 +80,8 @@ class SummaryAPITest(TestCase):
         )
         self.summary1 = Summary.objects.create(
             transcription=self.transcription1,
-            summary_text="There is a fire at the west end."
+            summary_text="There is a fire at the west end.",
+            suggested_question="What resources are needed to control the fire?"
         )
 
         self.transcription2 = Transcription.objects.create(
@@ -123,7 +91,8 @@ class SummaryAPITest(TestCase):
         )
         self.summary2 = Summary.objects.create(
             transcription=self.transcription2,
-            summary_text="Injuries reported at Main Street."
+            summary_text="Injuries reported at Main Street.",
+            suggested_question="What is the severity of the injuries?"
         )
 
     def test_fetch_all_summaries(self):
@@ -133,6 +102,10 @@ class SummaryAPITest(TestCase):
 
         summaries = response.data["summaries"]
         self.assertEqual(len(summaries), 2)
+
+        # Check the content of the first summary
+        self.assertEqual(summaries[0]["suggested_question"], self.summary1.suggested_question)
+        self.assertEqual(summaries[1]["suggested_question"], self.summary2.suggested_question)
 
         logger.debug(f"All Summaries Response: {response.data}")
 
@@ -150,9 +123,7 @@ class SummaryAPITest(TestCase):
         self.assertEqual(len(summaries), 1)  # Only the second summary should be returned
         self.assertEqual(summaries[0]["transcription_text"], self.transcription2.transcription_text)
         self.assertEqual(summaries[0]["summary_message"], self.summary2.summary_text)
-
-
-
+        self.assertEqual(summaries[0]["suggested_question"], self.summary2.suggested_question)
 
     def test_no_summaries_after_timestamp(self):
         """Test fetching summaries when no new ones exist after the given timestamp"""

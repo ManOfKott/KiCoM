@@ -28,10 +28,11 @@ class Summary(models.Model):
         related_name="summary"
     )
     summary_text = models.TextField()
-    sender = models.CharField(max_length=255, default="Unknown")
-    receiver = models.CharField(max_length=255, default="Unknown")
+    sender = models.CharField(max_length=100, default="Unknown")
+    receiver = models.CharField(max_length=100, default="Unknown")
     category = models.CharField(max_length=100, default="General")
     priority = models.CharField(max_length=50, default="Low")
+    suggested_question = models.TextField(default="No suggested question provided.")  # New field
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

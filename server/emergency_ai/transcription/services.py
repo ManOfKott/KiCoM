@@ -28,12 +28,7 @@ def transcribe_audio_with_openai(file_path):
 
 def ai_generate_detailed_summary(transcription_text, context=""):
     """
-    Generates a detailed summary with sender, receiver, message, category, and priority from the transcription.
-    Args:
-        transcription_text (str): Full transcription text.
-        context (str): Additional context to help the AI (e.g., emergency situation details).
-    Returns:
-        dict: A structured summary with keys: sender, receiver, message, category, priority.
+    Generates a detailed summary with sender, receiver, message, category, priority, and suggested question.
     """
     if not transcription_text.strip():
         logger.warning("Empty transcription text provided. Skipping AI summarization.")
@@ -43,6 +38,7 @@ def ai_generate_detailed_summary(transcription_text, context=""):
             "message": "No content provided.",
             "category": "General",
             "priority": "Low",
+            "suggested_question": "Could you provide more details about this?",
         }
 
     prompt = f"""
@@ -54,6 +50,7 @@ Your task is to:
 3. Summarize all relevant details from the transcription into one cohesive message. Keep the summary concise.
 4. Assign a category to the message based on its content (e.g., "Fire", "Medical Emergency", "Traffic Incident").
 5. Assign a priority level to the message ("Low", "Medium", "High") based on its urgency.
+6. Suggest one relevant question to ask next based on the content of the transcription.
 
 Here is the transcription text:
 {transcription_text}
@@ -67,7 +64,8 @@ Please return the result in this JSON format:
     "receiver": "Control",
     "message": "There is a fire at the west end.",
     "category": "Fire",
-    "priority": "High"
+    "priority": "High",
+    "suggested_question": "What is the extent of the fire damage?"
 }}
     """
 
@@ -101,4 +99,6 @@ Please return the result in this JSON format:
             "message": "Error generating summary.",
             "category": "General",
             "priority": "Low",
+            "suggested_question": "What additional information can you provide?",
         }
+
