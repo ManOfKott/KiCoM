@@ -40,7 +40,11 @@ const AudioUpload = () => {
   return (
     <Box>
       <Typography>Audio hochladen</Typography>
-      <input type="file" accept=".m4a" onChange={handleFileChange} />
+      <input
+        type="file"
+        accept=".m4a, .mp3, .wav"
+        onChange={handleFileChange}
+      />
       <Button onClick={handleUpload}>Hochladen</Button>
     </Box>
   );
