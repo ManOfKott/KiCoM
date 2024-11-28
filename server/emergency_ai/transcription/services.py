@@ -63,8 +63,10 @@ You are an assistant helping with emergency response transcription. Your task is
     - Each interaction should be processed as an individual message.
 
 3. **Summarize Content**:
-    - Create a concise message for each interaction.
-    - Retain the original German text for the "message" field.
+    - Create a concise summary of the message for each interaction.
+    - Ignore filler words like "Ja", "Verstanden", "Ende".
+    - Focus on the core content of the message.
+    
 
 4. **Categorize**:
     - Assign a category to each message based on its content. Example categories:
@@ -92,7 +94,7 @@ Kommen. Verstanden. Lüfter vor den Haupteingang zum Entrauchen des Gebäudes. J
     {{
         "sender": "ST",
         "receiver": "GF",
-        "message": "Schlauchtrupp HLF und Gruppenführer kommen",
+        "message": "Schlauchtrupp fordert Gruppenführer zum kommen an",
         "category": "Kommunikation herstellen",
         "prioritized": "False",
         "suggested_question": ""
@@ -100,7 +102,7 @@ Kommen. Verstanden. Lüfter vor den Haupteingang zum Entrauchen des Gebäudes. J
     {{
         "sender": "GF",
         "receiver": "ST",
-        "message": "Hier Schlauchtrupp HLF kommen",
+        "message": "Gruppenführer bestätigt Funkaufbau",
         "category": "Kommunikation herstellen",
         "prioritized": "False",
         "suggested_question": ""
@@ -108,7 +110,15 @@ Kommen. Verstanden. Lüfter vor den Haupteingang zum Entrauchen des Gebäudes. J
     {{
         "sender": "ST",
         "receiver": "GF",
-        "message": "Bringen Sie den Drucklüfter zum Haupteingang zur Entrauchung des Gebäudes",
+        "message": "Drucklüfter zum Haupteingang bringen",
+        "category": "Anfrage Ausrüstung",
+        "prioritized": "True",
+        "suggested_question": "Brauchen Sie zusätzliche Ausrüstung?"
+    }},
+    {{
+        "sender": "GF",
+        "receiver": "ST",
+        "message": "Bestaetigt die Bringung des Luefters",
         "category": "Anfrage Ausrüstung",
         "prioritized": "True",
         "suggested_question": "Brauchen Sie zusätzliche Ausrüstung?"
