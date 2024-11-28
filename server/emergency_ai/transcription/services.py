@@ -56,7 +56,8 @@ You are an assistant helping with emergency response transcription. Your task is
     - Determine the sender and receiver for each message. Use codes like:
       - ANGRIFFSTRUPP ("AT"), WASSERTRUPP ("WT"), SCHLAUCHTRUPP ("ST"), GRUPPENFÜHRER ("GF"),
         MASCHINIST ("MA"), ZUGFÜHRER ("ZF"), EINSATZLEITER ("EL"), MELDER ("MD").
-    - If sender or receiver is unclear, use "?".
+    - Choose the most pllausible sender and receiver based on the message.
+    - The sender and the receiver can not be the same person.
 
 2. **Segment Messages**:
     - Divide the transcription into distinct interactions. Start and end points are typically marked by "Kommen" or "Ende".

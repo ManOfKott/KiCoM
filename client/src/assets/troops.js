@@ -9,7 +9,6 @@ export const troopsEnum = {
   MELDER: "MD",
   LEITSTELLE: "LS",
   EINSATZLEITWAGEN: "ELW",
-  UNKNOWN: "?",
 };
 
 export const troopColors = {
@@ -21,5 +20,4 @@ export const troopColors = {
   [troopsEnum.ZUGFÜHRER]: "#37902e",
   [troopsEnum.EINSATZLEITER]: "#d8e279",
   [troopsEnum.MELDER]: "#a54ea4",
-  [troopsEnum.UNKNOWN]: "#000000",
 };
