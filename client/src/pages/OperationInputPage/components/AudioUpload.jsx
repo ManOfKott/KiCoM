@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Typography, Button, Box } from "@mui/material";
 
 const AudioUpload = () => {
   const [file, setFile] = useState(null);
@@ -37,11 +38,11 @@ const AudioUpload = () => {
   };
 
   return (
-    <div>
-      <h2>Audio hochladen</h2>
+    <Box>
+      <Typography>Audio hochladen</Typography>
       <input type="file" accept=".m4a" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Hochladen</button>
-    </div>
+      <Button onClick={handleUpload}>Hochladen</Button>
+    </Box>
   );
 };
 

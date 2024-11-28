@@ -12,12 +12,12 @@ const RunDemoComponent = () => {
   const audioFiles = [audio1, audio2, audio3];
   const audioRef = React.useRef(null);
 
-  const createFileFromURL = async (fileUrl) => {
+  const createFileFromURL = async (fileUrl, index) => {
     const response = await fetch(fileUrl);
     const blob = await response.blob();
 
     // Create a new File object from the Blob
-    const file = new File([blob], "audio1.m4a", { type: "audio/m4a" });
+    const file = new File([blob], `audio${index}.m4a`, { type: "audio/m4a" });
 
     console.log("file", file);
     return file;
@@ -36,7 +36,7 @@ const RunDemoComponent = () => {
         audioRef.current.load();
         audioRef.current.play();
 
-        const audioFile = await createFileFromURL(audioFilePath);
+        const audioFile = await createFileFromURL(audioFilePath, index);
 
         formData.append("audio", audioFile);
         formData.append("session_id", "test-session-1");

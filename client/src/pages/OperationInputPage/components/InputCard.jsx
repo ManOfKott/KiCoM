@@ -49,12 +49,12 @@ const InputCard = ({ input, prioritized }) => {
               width: 35,
               height: 35,
               border: "1px solid",
-              borderColor: troopColors[input.reciever],
+              borderColor: troopColors[input.receiver],
               bgcolor: "white",
-              color: troopColors[input.reciever],
+              color: troopColors[input.receiver],
             }}
           >
-            {input.reciever}
+            {input.receiver}
           </Avatar>
         </Stack>
 
