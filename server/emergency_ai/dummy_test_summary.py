@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 BASE_URL = "http://127.0.0.1:8000/api"  # Replace with your actual server URL
 SESSION_ID = "test-session-1"
 AUDIO_FILES = [
-    r"test_media/Feuerwehr 4.m4a"
+    r"test_media/audio1.mp3",
+    r"test_media/audio2.mp3"
+    
 ]
 
 def upload_audio_files():

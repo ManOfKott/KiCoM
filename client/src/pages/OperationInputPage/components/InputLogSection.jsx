@@ -11,7 +11,7 @@ const InputLogSection = ({ inputs }) => {
     <Card
       variant="outlined"
       sx={{
-        border: "1px solid grey",
+        border: "4px solid grey",
         borderRadius: "0.5rem",
         borderColor,
         bgcolor,

@@ -56,7 +56,7 @@ You are an assistant helping with emergency response transcription. Your task is
     - Determine the sender and receiver for each message. Use codes like:
       - ANGRIFFSTRUPP ("AT"), WASSERTRUPP ("WT"), SCHLAUCHTRUPP ("ST"), GRUPPENFÜHRER ("GF"),
         MASCHINIST ("MA"), ZUGFÜHRER ("ZF"), EINSATZLEITER ("EL"), MELDER ("MD").
-    - If sender or receiver is unclear, use "UNKNOWN".
+    - If sender or receiver is unclear, use "?".
 
 2. **Segment Messages**:
     - Divide the transcription into distinct interactions. Start and end points are typically marked by "Kommen" or "Ende".
@@ -76,7 +76,7 @@ You are an assistant helping with emergency response transcription. Your task is
       - "Notfall medizinisch" (Medical Emergency).
 
 5. **Set Priority**:
-    - Mark priority as "True" for urgent messages (e.g., requests for equipment, life-threatening scenarios).
+    - Mark priority as "True" for urgent messages (e.g. life-threatening scenarios and scenarios that can lead to the loss of life).
     - Otherwise, use "False".
 
 6. **Suggest Questions**:

@@ -1,15 +1,16 @@
 import React from "react";
 import axios from "axios";
-import audio1 from "../../../assets/audio/audio1.m4a";
-import audio2 from "../../../assets/audio/audio2.m4a";
-import audio3 from "../../../assets/audio/audio3.m4a";
+import audio1 from "../../../assets/audio/audio1.mp3";
+import audio2 from "../../../assets/audio/audio2.mp3";
+import audio3 from "../../../assets/audio/audio3.mp3";
+import audio4 from "../../../assets/audio/audio4.mp3";
 import { Button } from "@mui/material";
 
 const FILE_READING_DELAY = 20000;
 
 const RunDemoComponent = () => {
   const [running, setRunning] = React.useState(false);
-  const audioFiles = [audio1, audio2, audio3];
+  const audioFiles = [audio1, audio2, audio3, audio4];
   const audioRef = React.useRef(null);
 
   const createFileFromURL = async (fileUrl, index) => {
@@ -17,13 +18,17 @@ const RunDemoComponent = () => {
     const blob = await response.blob();
 
     // Create a new File object from the Blob
-    const file = new File([blob], `audio${index}.m4a`, { type: "audio/m4a" });
+    const file = new File([blob], `audio${index}.mp3`, { type: "audio/mp3" });
 
     console.log("file", file);
     return file;
   };
 
   const handleRunDemo = async () => {
+    if (running) {
+      return;
+    }
+
     setRunning(true);
 
     audioFiles.forEach(async (audioFilePath, index) => {
@@ -66,7 +71,7 @@ const RunDemoComponent = () => {
           borderColor: "#cd1c18",
           height: "50px",
           fontSize: "1rem",
-          width: "100%",
+          width: "40%",
         }}
         onClick={handleRunDemo}
       >

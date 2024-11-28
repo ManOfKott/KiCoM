@@ -10,6 +10,7 @@ import React from "react";
 import OperationSection from "./components/OperationSection";
 import AudioUpload from "./components/AudioUpload";
 import RunDemoComponent from "./components/RunDemoComponent";
+import PDFExportComponent from "./components/PDFExportComponent";
 import { Box } from "@mui/system";
 
 const OperationInputPage = () => {
@@ -34,16 +35,50 @@ const OperationInputPage = () => {
             borderBottomRightRadius: "10px",
           }}
         >
-          <Box></Box>
-          <Typography
-            display="flex"
-            variant="h3"
-            textAlign="center"
-            sx={{ color: "black" }}
+          <Box
+            sx={{
+              display: "flex",
+              boxSizing: "border-box",
+              alignItems: "center",
+              width: "500px",
+            }}
           >
-            Operation Input
-          </Typography>
-          <Box sx={{ width: "250px" }}>
+            <Typography
+              display="flex"
+              variant="h5"
+              textAlign="center"
+              fontFamily={"Roboto"}
+              sx={{ color: "#9b1313" }}
+            >
+              KiCoM Box
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "500px",
+            }}
+          >
+            <Typography
+              display="flex"
+              variant="h3"
+              textAlign="center"
+              sx={{ color: "black" }}
+            >
+              Einsatz Konsole
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              width: "500px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <PDFExportComponent />
             <RunDemoComponent />
           </Box>
         </Toolbar>

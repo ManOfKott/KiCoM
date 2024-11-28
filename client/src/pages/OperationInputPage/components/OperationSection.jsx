@@ -85,22 +85,26 @@ const OperationSection = () => {
           <InputLogSection inputs={categorizedInputs.all} />
         </Grid>
 
-        <Grid item container spacing={0} size={6} sx={{ height: "100%" }}>
-          <Grid item size={12} sx={{ height: "50%", boxSizing: "border-box" }}>
-            <PrioSection inputs={categorizedInputs.prioritized} />
-          </Grid>
+        <Grid
+          item
+          container
+          spacing={0}
+          size={6}
+          sx={{ height: "100%", blockSizing: "border-block" }}
+        >
+          <PrioSection inputs={categorizedInputs.prioritized} />
 
-          <Grid
+          {/* <Grid
             item
             size={12}
             sx={{ height: "50%", paddingTop: "10px", boxSizing: "border-box" }}
           >
             <MarkedSection inputs={categorizedInputs.marked} />
-          </Grid>
+          </Grid> */}
         </Grid>
-        <Grid item size={12} sx={{ height: "100%" }}>
+        {/* <Grid item size={12} sx={{ height: "100%" }}>
           <AudioUpload />
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );
