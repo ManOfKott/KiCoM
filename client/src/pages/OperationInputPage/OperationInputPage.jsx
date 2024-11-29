@@ -47,7 +47,7 @@ const OperationInputPage = () => {
               display="flex"
               variant="h5"
               textAlign="center"
-              fontFamily={"Roboto"}
+              
               sx={{ color: "#9b1313" }}
             >
               KiCoM Box

@@ -20,4 +20,6 @@ export const troopColors = {
   [troopsEnum.ZUGFÜHRER]: "#37902e",
   [troopsEnum.EINSATZLEITER]: "#d8e279",
   [troopsEnum.MELDER]: "#a54ea4",
+  [troopsEnum.LEITSTELLE]: "#000000",
+  [troopsEnum.EINSATZLEITWAGEN]: "#000000",
 };
